@@ -14,7 +14,8 @@ import {
   Settings,
   Check,
   X,
-  Dices
+  Dices,
+  Book
 } from 'lucide-vue-next';
 
 const lang = ref('zh'); // 'zh' or 'en'
@@ -28,6 +29,7 @@ const translations = {
     weapon: '武器',
     monster: '目标怪物',
     equipment: '装备限制',
+    skill: '技能限制',
     behavior: '行为限制',
     special: '特殊限制',
     draw: '抽取',
@@ -48,6 +50,7 @@ const translations = {
     weapon: 'Weapon',
     monster: 'Target Monster',
     equipment: 'Equipment Restrictions',
+    skill: 'Skill Restrictions',
     behavior: 'Behavior Restrictions',
     special: 'Special Restrictions',
     draw: 'Draw',
@@ -72,12 +75,14 @@ const result = reactive({
   weapon: null,
   monster: null,
   equipment: [],
+  skill: [],
   behavior: [],
   special: []
 });
 
 const config = reactive({
   equipmentCount: 1,
+  skillCount: 1,
   behaviorCount: 1,
   specialCount: 1
 });
@@ -87,6 +92,7 @@ const pool = reactive({
   weapons: [],
   monsters: [],
   equipmentRestrictions: [],
+  skillRestrictions: [],
   behaviorRestrictions: [],
   specialRestrictions: []
 });
@@ -96,17 +102,24 @@ const newItem = reactive({
   weapons: { zh: '', en: '' },
   monsters: { zh: '', en: '' },
   equipmentRestrictions: { zh: '', en: '' },
+  skillRestrictions: { zh: '', en: '' },
   behaviorRestrictions: { zh: '', en: '' },
   specialRestrictions: { zh: '', en: '' }
 });
 
-const categoryKeys = ['weapons', 'monsters', 'equipmentRestrictions', 'behaviorRestrictions', 'specialRestrictions'];
+const categoryKeys = ['weapons', 'monsters', 'equipmentRestrictions', 'skillRestrictions', 'behaviorRestrictions', 'specialRestrictions'];
 
 // Initialize pool from localStorage or default
 onMounted(() => {
-  const savedPool = localStorage.getItem('mhw_random_pool_v2');
+  const savedPool = localStorage.getItem('mhw_random_pool_v3');
   if (savedPool) {
-    Object.assign(pool, JSON.parse(savedPool));
+    const parsed = JSON.parse(savedPool);
+    Object.assign(pool, parsed);
+    
+    // Migration: Ensure skillRestrictions exists if loading from old save
+    if (!parsed.skillRestrictions) {
+      pool.skillRestrictions = defaultOptions.skillRestrictions.map(i => ({...i}));
+    }
   } else {
     resetPools();
   }
@@ -114,7 +127,7 @@ onMounted(() => {
 
 // Save to localStorage whenever pool changes
 watch(pool, (newPool) => {
-  localStorage.setItem('mhw_random_pool_v2', JSON.stringify(newPool));
+  localStorage.setItem('mhw_random_pool_v3', JSON.stringify(newPool));
 }, { deep: true });
 
 const resetPools = () => {
@@ -123,6 +136,7 @@ const resetPools = () => {
   pool.weapons = defaultOptions.weapons.map(i => ({...i}));
   pool.monsters = defaultOptions.monsters.map(i => ({...i}));
   pool.equipmentRestrictions = defaultOptions.equipmentRestrictions.map(i => ({...i}));
+  pool.skillRestrictions = defaultOptions.skillRestrictions.map(i => ({...i}));
   pool.behaviorRestrictions = defaultOptions.behaviorRestrictions.map(i => ({...i}));
   pool.specialRestrictions = defaultOptions.specialRestrictions.map(i => ({...i}));
 };
@@ -191,6 +205,14 @@ const clearEquipment = () => {
   clearItems(result.equipment);
 };
 
+const addSkill = (count) => {
+  addUniqueItems(result.skill, pool.skillRestrictions, count);
+};
+
+const clearSkill = () => {
+  clearItems(result.skill);
+};
+
 const addBehavior = (count) => {
   addUniqueItems(result.behavior, pool.behaviorRestrictions, count);
 };
@@ -214,6 +236,9 @@ const generateChallenge = () => {
   clearEquipment();
   addEquipment(1);
   
+  clearSkill();
+  addSkill(1);
+
   clearBehavior();
   addBehavior(1);
   
@@ -231,6 +256,7 @@ const getIconForCategory = (category) => {
     case 'weapons': return Sword;
     case 'monsters': return Skull;
     case 'equipment': return Shield;
+    case 'skill': return Book;
     case 'behavior': return Zap;
     case 'special': return Star;
     default: return Star;
@@ -302,6 +328,26 @@ const getItemIcon = (item) => {
         </div>
         <ul v-if="result.equipment.length">
           <li v-for="(item, index) in result.equipment" :key="index">
+            <component :is="getItemIcon(item)" class="icon-item" :class="{ 'icon-ban': getItemIcon(item) === Ban }" :size="16" />
+            {{ displayItem(item) }}
+          </li>
+        </ul>
+        <div v-else class="placeholder">{{ t.noLimit }}</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2><component :is="Book" class="icon-title" /> {{ t.skill }}</h2>
+          <div class="card-controls">
+            <button class="mini-btn" @click="addSkill(1)">+1</button>
+            <button class="mini-btn" @click="addSkill(3)">+3</button>
+            <button class="mini-btn clear-btn" @click="clearSkill" :title="t.clear">
+              <Trash2 :size="16" />
+            </button>
+          </div>
+        </div>
+        <ul v-if="result.skill.length">
+          <li v-for="(item, index) in result.skill" :key="index">
             <component :is="getItemIcon(item)" class="icon-item" :class="{ 'icon-ban': getItemIcon(item) === Ban }" :size="16" />
             {{ displayItem(item) }}
           </li>

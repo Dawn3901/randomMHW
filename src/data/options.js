@@ -17,30 +17,37 @@ export const options = {
   ],
   monsters: [
     { zh: "黑龙", en: "Fatalis" },
-    { zh: "金狮子", en: "Rajang" },
     { zh: "激昂金狮子", en: "Furious Rajang" },
     { zh: "煌黑龙", en: "Alatreon" },
-    { zh: "灭尽龙", en: "Nergigante" },
-    { zh: "悉尼灭尽龙", en: "Ruiner Nergigante" },
-    { zh: "冰咒龙", en: "Velkhana" },
-    { zh: "历战王冰咒龙", en: "AT Velkhana" },
+    { zh: "歼世灭尽龙", en: "Ruiner Nergigante" },
+    { zh: "王冰", en: "AT Velkhana" },
     { zh: "猛爆碎龙", en: "Raging Brachydios" },
     { zh: "狱狼龙", en: "Stygian Zinogre" },
     { zh: "贝希摩斯", en: "Behemoth" },
     { zh: "古代鹿首精", en: "Ancient Leshen" },
     { zh: "绚辉龙", en: "Kulve Taroth" },
-    { zh: "赤龙", en: "Safi'jiiva" }
+    { zh: "冥赤龙", en: "Safi'jiiva" }
   ],
   equipmentRestrictions: [
     { zh: "防卫队武器", en: "Defender Weapons" },
     { zh: "防卫队防具", en: "Guardian Armor" },
     { zh: "禁止黑龙套", en: "No Fatalis Armor" },
     { zh: "禁止寒气套", en: "No Frostcraft" },
-    { zh: "禁止赤龙套", en: "No Safi Armor" },
+    { zh: "使用冥赤龙防具", en: "Use Safi Armor" },
     { zh: "只能穿R11以下防具", en: "R11 Armor or lower" },
-    { zh: "裸奔", en: "No Armor" },
     { zh: "禁止护石", en: "No Charms" },
-    { zh: "禁止衣装", en: "No Mantles" }
+    { zh: "禁止衣装", en: "No Mantles" },
+    { zh: "禁止克制吸血", en: "No Bloodlust" }
+  ],
+  skillRestrictions: [
+    { zh: "禁止体力增强", en: "No Health Boost" },
+    { zh: "禁止回避性能", en: "No Evade Window" },
+    { zh: "禁止强弓", en: "No Bow Charge Plus" },
+    { zh: "禁止看破", en: "No Critical Eye" },
+    { zh: "禁止弱点特效", en: "No Weakness Exploit" },
+    { zh: "禁止超会心", en: "No Critical Boost" },
+    { zh: "禁止挑战者", en: "No Agitator" },
+    { zh: "禁止耳塞", en: "No Earplugs" }
   ],
   behaviorRestrictions: [
     { zh: "禁止登龙", en: "No Helm Breaker (LS)" },
@@ -63,6 +70,10 @@ export const options = {
     { zh: "必须携带随从猫", en: "Must bring Palico" },
     { zh: "禁止携带随从猫", en: "No Palico" },
     { zh: "猫饭只能吃推荐定食", en: "Chef's Choice Platter only" },
-    { zh: "反转控制器", en: "Invert Controls" }
+    { zh: "反转控制器", en: "Invert Controls" },
+    { zh: "只能使用道具栏前5格道具", en: "Use first 5 item slots only" },
+    { zh: "使用空外观(看不见自己)", en: "Use invisible appearance" },
+    { zh: "狩猎时烤熟3次肉", en: "Cook 3 meats during hunt" },
+    { zh: "裸奔", en: "No Armor" }
   ]
 };
