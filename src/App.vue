@@ -1,6 +1,21 @@
 <script setup>
 import { ref, reactive, watch, onMounted, computed } from 'vue';
 import { options as defaultOptions } from './data/options.js';
+import { 
+  RefreshCw, 
+  Trash2, 
+  Ban, 
+  Sword, 
+  Skull, 
+  Shield, 
+  Zap, 
+  Star, 
+  Plus, 
+  Settings,
+  Check,
+  X,
+  Dices
+} from 'lucide-vue-next';
 
 const lang = ref('zh'); // 'zh' or 'en'
 
@@ -210,6 +225,32 @@ const displayItem = (item) => {
   if (!item) return t.value.unknown;
   return item[lang.value] || item.zh || item.en || t.value.unknown;
 };
+
+const getIconForCategory = (category) => {
+  switch (category) {
+    case 'weapons': return Sword;
+    case 'monsters': return Skull;
+    case 'equipment': return Shield;
+    case 'behavior': return Zap;
+    case 'special': return Star;
+    default: return Star;
+  }
+};
+
+const getItemIcon = (item) => {
+  if (!item) return null;
+  const text = item.zh || item.en || '';
+  if (text.includes('禁止') || text.toLowerCase().includes('no ')) {
+    return Ban;
+  }
+  if (text.includes('武器') || text.toLowerCase().includes('weapon ')) {
+    return Sword;
+  }
+  if (text.includes('防具') || text.toLowerCase().includes('armor ')) {
+    return Shield;
+  }
+  return Check; // Default icon for allowed items
+};
 </script>
 
 <template>
@@ -230,61 +271,80 @@ const displayItem = (item) => {
     <div class="results">
       <div class="card weapon-card">
         <div class="card-header">
-          <h2>{{ t.weapon }}</h2>
-          <button class="mini-btn" @click="generateWeapon">{{ t.draw }}</button>
+          <h2><component :is="Sword" class="icon-title" /> {{ t.weapon }}</h2>
+          <button class="mini-btn" @click="generateWeapon" :title="t.draw">
+            <RefreshCw :size="16" />
+          </button>
         </div>
         <div class="value">{{ displayItem(result.weapon) }}</div>
       </div>
 
       <div class="card monster-card">
         <div class="card-header">
-          <h2>{{ t.monster }}</h2>
-          <button class="mini-btn" @click="generateMonster">{{ t.draw }}</button>
+          <h2><component :is="Skull" class="icon-title" /> {{ t.monster }}</h2>
+          <button class="mini-btn" @click="generateMonster" :title="t.draw">
+            <RefreshCw :size="16" />
+          </button>
         </div>
         <div class="value">{{ displayItem(result.monster) }}</div>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <h2>{{ t.equipment }}</h2>
+          <h2><component :is="Shield" class="icon-title" /> {{ t.equipment }}</h2>
           <div class="card-controls">
             <button class="mini-btn" @click="addEquipment(1)">+1</button>
             <button class="mini-btn" @click="addEquipment(3)">+3</button>
-            <button class="mini-btn clear-btn" @click="clearEquipment">{{ t.clear }}</button>
+            <button class="mini-btn clear-btn" @click="clearEquipment" :title="t.clear">
+              <Trash2 :size="16" />
+            </button>
           </div>
         </div>
         <ul v-if="result.equipment.length">
-          <li v-for="(item, index) in result.equipment" :key="index">{{ displayItem(item) }}</li>
+          <li v-for="(item, index) in result.equipment" :key="index">
+            <component :is="getItemIcon(item)" class="icon-item" :class="{ 'icon-ban': getItemIcon(item) === Ban }" :size="16" />
+            {{ displayItem(item) }}
+          </li>
         </ul>
         <div v-else class="placeholder">{{ t.noLimit }}</div>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <h2>{{ t.behavior }}</h2>
+          <h2><component :is="Zap" class="icon-title" /> {{ t.behavior }}</h2>
           <div class="card-controls">
             <button class="mini-btn" @click="addBehavior(1)">+1</button>
             <button class="mini-btn" @click="addBehavior(3)">+3</button>
-            <button class="mini-btn clear-btn" @click="clearBehavior">{{ t.clear }}</button>
+            <button class="mini-btn clear-btn" @click="clearBehavior" :title="t.clear">
+              <Trash2 :size="16" />
+            </button>
           </div>
         </div>
         <ul v-if="result.behavior.length">
-          <li v-for="(item, index) in result.behavior" :key="index">{{ displayItem(item) }}</li>
+          <li v-for="(item, index) in result.behavior" :key="index">
+            <component :is="getItemIcon(item)" class="icon-item" :class="{ 'icon-ban': getItemIcon(item) === Ban }" :size="16" />
+            {{ displayItem(item) }}
+          </li>
         </ul>
         <div v-else class="placeholder">{{ t.noLimit }}</div>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <h2>{{ t.special }}</h2>
+          <h2><component :is="Star" class="icon-title" /> {{ t.special }}</h2>
           <div class="card-controls">
             <button class="mini-btn" @click="addSpecial(1)">+1</button>
             <button class="mini-btn" @click="addSpecial(3)">+3</button>
-            <button class="mini-btn clear-btn" @click="clearSpecial">{{ t.clear }}</button>
+            <button class="mini-btn clear-btn" @click="clearSpecial" :title="t.clear">
+              <Trash2 :size="16" />
+            </button>
           </div>
         </div>
         <ul v-if="result.special.length">
-          <li v-for="(item, index) in result.special" :key="index">{{ displayItem(item) }}</li>
+          <li v-for="(item, index) in result.special" :key="index">
+            <component :is="getItemIcon(item)" class="icon-item" :class="{ 'icon-ban': getItemIcon(item) === Ban }" :size="16" />
+            {{ displayItem(item) }}
+          </li>
         </ul>
         <div v-else class="placeholder">{{ t.noLimit }}</div>
       </div>
@@ -436,6 +496,13 @@ input[type="number"] {
   color: #f0b90b;
   font-size: 1.1rem;
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon-title {
+  color: #f0b90b;
 }
 
 .card-header {
@@ -462,6 +529,11 @@ input[type="number"] {
   cursor: pointer;
   font-size: 0.8rem;
   transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
 }
 
 .mini-btn:hover {
@@ -498,6 +570,17 @@ ul {
 li {
   padding: 0.5rem 0;
   border-bottom: 1px solid #333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon-item {
+  color: #4caf50;
+}
+
+.icon-ban {
+  color: #ff6b6b;
 }
 
 li:last-child {
